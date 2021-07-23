@@ -154,6 +154,7 @@ EFI_STATUS OpenGOP(EFI_HANDLE image_handle, EFI_GRAPHICS_OUTPUT_PROTOCOL **gop)
 
   return EFI_SUCCESS;
 }
+
 const CHAR16 *GetPixelFormatUnicode(EFI_GRAPHICS_PIXEL_FORMAT fmt)
 {
   switch (fmt)
@@ -228,6 +229,7 @@ EFI_STATUS EFIAPI UefiMain(
   gBS->AllocatePages(
       AllocateAddress, EfiLoaderData,
       (kernel_file_size + 0xfff) / 0x1000, &kernel_base_addr);
+  kernel_file->Read(kernel_file, &kernel_file_size, (VOID *)kernel_base_addr);
   Print(L"Kernel: 0x%0lx (%lu bytes)\n", kernel_base_addr, kernel_file_size);
 
   EFI_STATUS status;
@@ -245,9 +247,9 @@ EFI_STATUS EFIAPI UefiMain(
 
   UINT64 entry_addr = *(UINT64 *)(kernel_base_addr + 24);
 
-  typedef void EntryPointType(void);
+  typedef void EntryPointType(UINT64, UINT64);
   EntryPointType *entry_point = (EntryPointType *)entry_addr;
-  entry_point();
+  entry_point(gop->Mode->FrameBufferBase, gop->Mode->FrameBufferSize);
 
   Print(L"All done\n");
 
