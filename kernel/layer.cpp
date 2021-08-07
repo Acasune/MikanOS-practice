@@ -28,29 +28,36 @@ Layer& Layer::MoveRelative(Vector2D<int> pos_diff) {
   return *this;
 }
 
-void Layer::DrawTo(PixelWriter& writer) const {
-  if(window_) {
-    window_ -> DrawTo(writer, pos_);
+// #@@range_begin(layer_drawto)
+void Layer::DrawTo(FrameBuffer& screen) const {
+  if (window_) {
+    window_->DrawTo(screen, pos_);
   }
 }
+// #@@range_end(layer_drawto)
 
-void LayerManager::SetWriter(PixelWriter* writer) {
-  writer_ = writer;
+
+// #@@range_begin(layermgr_setwriter)
+void LayerManager::SetWriter(FrameBuffer* screen) {
+  screen_ = screen;
 }
+// #@@range_end(layermgr_setwriter)
 
 Layer& LayerManager::NewLayer() {
   ++latest_id_;
   return *layers_.emplace_back(new Layer{latest_id_});
 }
 
+// #@@range_begin(layermgr_draw)
 void LayerManager::Draw() const {
   for (auto layer : layer_stack_) {
-    layer->DrawTo(*writer_);
+    layer->DrawTo(*screen_);
   }
 }
+// #@@range_end(layermgr_draw)
 
 void LayerManager::Move(unsigned int id, Vector2D<int> new_position) {
-  FindLayer(id) -> Move(new_position);
+  FindLayer(id)->Move(new_position);
 }
 
 void LayerManager::MoveRelative(unsigned int id, Vector2D<int> pos_diff) {
@@ -58,11 +65,11 @@ void LayerManager::MoveRelative(unsigned int id, Vector2D<int> pos_diff) {
 }
 
 void LayerManager::UpDown(unsigned int id, int new_height) {
-  if(new_height < 0) {
+  if (new_height < 0) {
     Hide(id);
     return;
   }
-  if(new_height > layer_stack_.size()) {
+  if (new_height > layer_stack_.size()) {
     new_height = layer_stack_.size();
   }
 
@@ -80,19 +87,18 @@ void LayerManager::UpDown(unsigned int id, int new_height) {
   }
   layer_stack_.erase(old_pos);
   layer_stack_.insert(new_pos, layer);
-
 }
 
 void LayerManager::Hide(unsigned int id) {
   auto layer = FindLayer(id);
   auto pos = std::find(layer_stack_.begin(), layer_stack_.end(), layer);
-  if(pos != layer_stack_.end()) {
+  if (pos != layer_stack_.end()) {
     layer_stack_.erase(pos);
   }
 }
 
 Layer* LayerManager::FindLayer(unsigned int id) {
-  auto pred = [id](const std::unique_ptr<Layer> & elem) {
+  auto pred = [id](const std::unique_ptr<Layer>& elem) {
     return elem->ID() == id;
   };
   auto it = std::find_if(layers_.begin(), layers_.end(), pred);
