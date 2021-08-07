@@ -1,17 +1,10 @@
-﻿#pragma once
+﻿
+#pragma once
 
 #include <array>
 #include <cstdint>
 
-enum class DescriptorType {
-  kUpper8Bytes = 0,
-  kLDT = 2,
-  kTSSAvailable = 9,
-  kTSSBusy = 11,
-  kCallGate = 12,
-  kInterruptGate = 14,
-  kTrapGate = 15,
-};
+#include "x86_descriptor.hpp"
 
 union InterruptDescriptorAttribute {
   uint16_t data;
@@ -32,24 +25,22 @@ struct InterruptDescriptor {
   uint16_t offset_middle;
   uint32_t offset_high;
   uint32_t reserved;
-  
 } __attribute__((packed));
 
-extern std::array<InterruptDescriptor, 256> isr;
+extern std::array<InterruptDescriptor, 256> idt;
 
 constexpr InterruptDescriptorAttribute MakeIDTAttr(
-  DescriptorType type,
-  uint8_t descriptor_private_level,
-  bool present=true,
-  uint8_t interrupt_stack_table = 0 ) {
-    InterruptDescriptorAttribute attr{};
-    attr.bits.interrupt_stack_table = interrupt_stack_table;
-    attr.bits.type = type;
-    attr.bits.descriptor_privilege_level = descriptor_private_level;
-    attr.bits.present = present;
-    return attr;
-  }
-
+    DescriptorType type,
+    uint8_t descriptor_privilege_level,
+    bool present = true,
+    uint8_t interrupt_stack_table = 0) {
+  InterruptDescriptorAttribute attr{};
+  attr.bits.interrupt_stack_table = interrupt_stack_table;
+  attr.bits.type = type;
+  attr.bits.descriptor_privilege_level = descriptor_privilege_level;
+  attr.bits.present = present;
+  return attr;
+}
 
 void SetIDTEntry(InterruptDescriptor& desc,
                  InterruptDescriptorAttribute attr,

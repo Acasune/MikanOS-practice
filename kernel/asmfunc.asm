@@ -19,25 +19,23 @@ IoIn32:
     in eax, dx
     ret
 
-global GetCS ; uint16_t GetCS(void);
+global GetCS  ; uint16_t GetCS(void);
 GetCS:
-    xor eax, eax ; also clears upper 32 bits of rax
+    xor eax, eax  ; also clears upper 32 bits of rax
     mov ax, cs
     ret
-;
-    
-global LoadIDT; void LoadIDT(uint16_t limit, uint64_t offset);
+
+global LoadIDT  ; void LoadIDT(uint16_t limit, uint64_t offset);
 LoadIDT:
     push rbp
     mov rbp, rsp
     sub rsp, 10
-    mov [rsp], di ; limit
-    mov [rsp + 2], rsi ; offset
+    mov [rsp], di  ; limit
+    mov [rsp + 2], rsi  ; offset
     lidt [rsp]
     mov rsp, rbp
     pop rbp
     ret
-;    
 
 global LoadGDT  ; void LoadGDT(uint16_t limit, uint64_t offset);
 LoadGDT:

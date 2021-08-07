@@ -24,15 +24,15 @@ static const auto kBytesPerFrame{4_KiB};
 
 class FrameID {
   public:
-  explicit FrameID(size_t id) : id_{id} {}
-  size_t ID() const { return id_; }
-  void* Frame() const { return reinterpret_cast<void*>(id_ * kBytesPerFrame); }
+    explicit FrameID(size_t id) : id_{id} {}
+    size_t ID() const { return id_; }
+    void* Frame() const { return reinterpret_cast<void*>(id_ * kBytesPerFrame); }
 
   private:
     size_t id_;
-}
+};
 
-static const FrameID kNullFrame{std:numeric_limits<size_t>::max()};
+static const FrameID kNullFrame{std::numeric_limits<size_t>::max()};
 
 class BitmapMemoryManager {
   public:
@@ -53,8 +53,10 @@ class BitmapMemoryManager {
   private:
     std::array<MapLineType, kFrameCount / kBitsPerMapLine> alloc_map_;
     FrameID range_begin_;
-    Grame range_end_;
+    FrameID range_end_;
 
     bool GetBit(FrameID frame) const;
     void SetBit(FrameID frame, bool allocated);  
-}
+};
+
+Error InitializeHeap(BitmapMemoryManager& memory_manager);
