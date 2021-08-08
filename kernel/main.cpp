@@ -303,10 +303,8 @@ extern "C" void KernelMainNewStack(
 
   // #@@range_begin(make_window)
   auto main_window = std::make_shared<Window>(
-      160, 68, frame_buffer_config.pixel_format);
+      160, 52, frame_buffer_config.pixel_format);
   DrawWindow(*main_window->Writer(), "Hello Window");
-  WriteString(*main_window->Writer(), {24, 28}, "Welcome to", {0, 0, 0});
-  WriteString(*main_window->Writer(), {24, 44}, " MikanOS world!", {0, 0, 0});
   // #@@range_end(make_window)
 
   FrameBuffer screen;
@@ -338,7 +336,16 @@ extern "C" void KernelMainNewStack(
   layer_manager->Draw();
   // #@@range_end(register_window)
 
+  char str[128];
+  unsigned int count = 0;
+
   while (true) {
+    ++count;
+    sprintf(str, "%010u", count);
+    FillRectangle(*main_window->Writer(), {24, 28}, {8 * 10, 16}, {0xc6, 0xc6, 0xc6});
+    WriteString(*main_window->Writer(), {24, 28}, str, {0, 0, 0});
+    layer_manager->Draw();
+
     __asm__("cli");
     if (main_queue.Count() == 0) {
       __asm__("sti\n\thlt");
