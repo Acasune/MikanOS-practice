@@ -50,12 +50,6 @@ int printk(const char* format, ...) {
   result = vsprintf(s, format, ap);
   va_end(ap);
 
-  StartLAPICTimer();
-  console->PutString(s);
-  auto elapsed = LAPICTimerElapsed();
-  StopLAPICTimer();
-
-  sprintf(s, "[%9d]", elapsed);
   console->PutString(s);
   return result;
 }
@@ -63,18 +57,20 @@ int printk(const char* format, ...) {
 char memory_manager_buf[sizeof(BitmapMemoryManager)];
 BitmapMemoryManager* memory_manager;
 
-// #@@range_begin(layermgr_mousehandler)
+// #@@range_begin(limit_mouse_area)
 unsigned int mouse_layer_id;
+Vector2D<int> screen_size;
+Vector2D<int> mouse_position;
 
 void MouseObserver(int8_t displacement_x, int8_t displacement_y) {
-  layer_manager->MoveRelative(mouse_layer_id, {displacement_x, displacement_y});
-  StartLAPICTimer();
+  auto newpos = mouse_position + Vector2D<int>{displacement_x, displacement_y};
+  newpos = ElementMin(newpos, screen_size + Vector2D<int>{-1, -1});
+  mouse_position = ElementMax(newpos, {0, 0});
+
+  layer_manager->Move(mouse_layer_id, mouse_position);
   layer_manager->Draw();
-  auto elapsed = LAPICTimerElapsed();
-  StopLAPICTimer();
-  printk("MouseObserver: elapsed = %u\n", elapsed);
 }
-// #@@range_end(layermgr_mousehandler)
+// #@@range_end(limit_mouse_area)
 
 void SwitchEhci2Xhci(const pci::Device& xhc_dev) {
   bool intel_ehc_exist = false;
@@ -132,7 +128,6 @@ extern "C" void KernelMainNewStack(
       break;
   }
 
-  // #@@range_begin(new_console)
   DrawDesktop(*pixel_writer);
 
   console = new(console_buf) Console{
@@ -141,9 +136,6 @@ extern "C" void KernelMainNewStack(
   console->SetWriter(pixel_writer);
   printk("Welcome to MikanOS!\n");
   SetLogLevel(kWarn);
-
-  InitializeLAPICTimer();
-  // #@@range_end(new_console)
 
   SetupSegments();
 
@@ -178,7 +170,6 @@ extern "C" void KernelMainNewStack(
           desc->number_of_pages * kUEFIPageSize / kBytesPerFrame);
     }
   }
-  // #@@range_begin(initialize_heap)
   memory_manager->SetMemoryRange(FrameID{1}, FrameID{available_end / kBytesPerFrame});
 
   if (auto err = InitializeHeap(*memory_manager)) {
@@ -186,7 +177,6 @@ extern "C" void KernelMainNewStack(
         err.Name(), err.File(), err.Line());
     exit(1);
   }
-  // #@@range_end(initialize_heap)
 
   std::array<Message, 32> main_queue_data;
   ArrayQueue<Message> main_queue{main_queue_data};
@@ -267,12 +257,13 @@ extern "C" void KernelMainNewStack(
     }
   }
 
-  // #@@range_begin(main_window)
-  const int kFrameWidth = frame_buffer_config.horizontal_resolution;
-  const int kFrameHeight = frame_buffer_config.vertical_resolution;
+  // #@@range_begin(screen_size)
+  screen_size.x = frame_buffer_config.horizontal_resolution;
+  screen_size.y = frame_buffer_config.vertical_resolution;
+  // #@@range_end(screen_size)
 
   auto bgwindow = std::make_shared<Window>(
-      kFrameWidth, kFrameHeight, frame_buffer_config.pixel_format);
+      screen_size.x, screen_size.y, frame_buffer_config.pixel_format);
   auto bgwriter = bgwindow->Writer();
 
   DrawDesktop(*bgwriter);
@@ -282,7 +273,7 @@ extern "C" void KernelMainNewStack(
       kMouseCursorWidth, kMouseCursorHeight, frame_buffer_config.pixel_format);
   mouse_window->SetTransparentColor(kMouseTransparentColor);
   DrawMouseCursor(mouse_window->Writer(), {0, 0});
-
+  mouse_position = {200, 200};
 
   FrameBuffer screen;
   if (auto err = screen.Initialize(frame_buffer_config)) {
@@ -299,13 +290,12 @@ extern "C" void KernelMainNewStack(
     .ID();
   mouse_layer_id = layer_manager->NewLayer()
     .SetWindow(mouse_window)
-    .Move({200, 200})
+    .Move(mouse_position)
     .ID();
 
   layer_manager->UpDown(bglayer_id, 0);
   layer_manager->UpDown(mouse_layer_id, 1);
   layer_manager->Draw();
-  // #@@range_end(main_window)
 
   while (true) {
     __asm__("cli");
