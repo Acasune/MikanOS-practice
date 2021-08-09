@@ -1,3 +1,8 @@
+/**
+ * @file main.cpp
+ *
+ * カーネル本体のプログラムを書いたファイル．
+ */
 
 #include <cstdint>
 #include <cstddef>
@@ -25,7 +30,6 @@
 #include "window.hpp"
 #include "layer.hpp"
 #include "message.hpp"
-
 #include "timer.hpp"
 
 int printk(const char* format, ...) {
@@ -61,7 +65,6 @@ std::deque<Message>* main_queue;
 
 alignas(16) uint8_t kernel_main_stack[1024 * 1024];
 
-// #@@range_begin(main_function)
 extern "C" void KernelMainNewStack(
     const FrameBufferConfig& frame_buffer_config_ref,
     const MemoryMap& memory_map_ref) {
@@ -86,22 +89,29 @@ extern "C" void KernelMainNewStack(
   InitializeMainWindow();
   InitializeMouse();
   layer_manager->Draw({{0, 0}, ScreenSize()});
-// #@@range_end(main_function)
-  InitializeLAPICTimer();
-  
+
+  // #@@range_begin(add_sample_timer)
+  InitializeLAPICTimer(*main_queue);
+
+  timer_manager->AddTimer(Timer(200, 2));
+  timer_manager->AddTimer(Timer(600, -1));
+  // #@@range_end(add_sample_timer)
+
   char str[128];
-  unsigned int count = 0;
 
   while (true) {
-    ++count;
-    sprintf(str, "%010u", count);
+    __asm__("cli");
+    const auto tick = timer_manager->CurrentTick();
+    __asm__("sti");
+
+    sprintf(str, "%010lu", tick);
     FillRectangle(*main_window->Writer(), {24, 28}, {8 * 10, 16}, {0xc6, 0xc6, 0xc6});
     WriteString(*main_window->Writer(), {24, 28}, str, {0, 0, 0});
     layer_manager->Draw(main_window_layer_id);
 
     __asm__("cli");
     if (main_queue->size() == 0) {
-      __asm__("sti");
+      __asm__("sti\n\thlt");
       continue;
     }
 
@@ -113,10 +123,16 @@ extern "C" void KernelMainNewStack(
     case Message::kInterruptXHCI:
       usb::xhci::ProcessEvents();
       break;
-    case Message::kInterruptLAPICTimer:
-      printk("Timer interrupt\n");
+    // #@@range_begin(timer_event)
+    case Message::kTimerTimeout:
+      printk("Timer: timeout = %lu, value = %d\n",
+          msg.arg.timer.timeout, msg.arg.timer.value);
+      if (msg.arg.timer.value > 0) {
+        timer_manager->AddTimer(Timer(
+            msg.arg.timer.timeout + 100, msg.arg.timer.value + 1));
+      }
       break;
-    // #@@range_end(process_event)
+    // #@@range_end(timer_event)
     default:
       Log(kError, "Unknown message type: %d\n", msg.type);
     }
