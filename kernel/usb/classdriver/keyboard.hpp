@@ -24,5 +24,5 @@ namespace usb {
 
     void NotifyKeyPush(uint8_t modifier, uint8_t keycode);
   };
-  // #@@range_end(hid_keyboard)
+
 }
