@@ -54,4 +54,4 @@ main.o: main.cpp \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/__tree \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/__node_handle \
   timer.hpp /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/queue \
-  acpi.hpp
+  acpi.hpp keyboard.hpp
