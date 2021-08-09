@@ -27,20 +27,20 @@ console.o: console.cpp console.hpp \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/cassert \
   /home/vscode/osbook/devenv/x86_64-elf/include/assert.h \
   /home/vscode/osbook/devenv/x86_64-elf/include/_ansi.h graphics.hpp \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/map \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/__tree \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/algorithm \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/functional \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/bit \
-  frame_buffer_config.hpp window.hpp \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/__node_handle \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/optional \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/vector \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/__bit_reference \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/climits \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/limits.h \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/__split_buffer \
-  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/optional \
-  frame_buffer.hpp error.hpp \
+  window.hpp frame_buffer.hpp frame_buffer_config.hpp error.hpp \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/cstdio \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/stdio.h \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/array font.hpp \
-  layer.hpp /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/map \
-  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/__tree \
-  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/__node_handle
+  layer.hpp

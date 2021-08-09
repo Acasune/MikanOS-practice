@@ -1,9 +1,4 @@
-﻿/**
- * @file pci.hpp
- *
- * PCI バス制御のプログラムを集めたファイル．
- */
-
+﻿
 #pragma once
 
 #include <cstdint>
@@ -171,3 +166,5 @@ namespace pci {
       MSITriggerMode trigger_mode, MSIDeliveryMode delivery_mode,
       uint8_t vector, unsigned int num_vector_exponent);
 }
+
+void InitializePCI();

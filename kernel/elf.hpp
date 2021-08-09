@@ -12,8 +12,6 @@ typedef int64_t   Elf64_Sxword;
 
 #define EI_NIDENT 16
 
-
-
 typedef struct {
   unsigned char e_ident[EI_NIDENT];
   Elf64_Half    e_type;
@@ -41,7 +39,6 @@ typedef struct {
   Elf64_Xword p_memsz;
   Elf64_Xword p_align;
 } Elf64_Phdr;
-
 
 #define PT_NULL    0
 #define PT_LOAD    1
