@@ -2,6 +2,7 @@
 
 #include "acpi.hpp"
 #include "interrupt.hpp"
+#include "task.hpp"
 
 namespace {
   const uint32_t kCountMax = 0xffffffffu;
@@ -45,7 +46,6 @@ Timer::Timer(unsigned long timeout, int value)
     : timeout_{timeout}, value_{value} {
 }
 
-// #@@range_begin(timermgr_addtimer)
 TimerManager::TimerManager(std::deque<Message>& msg_queue)
     : msg_queue_{msg_queue} {
   timers_.push(Timer{std::numeric_limits<unsigned long>::max(), -1});
@@ -54,15 +54,22 @@ TimerManager::TimerManager(std::deque<Message>& msg_queue)
 void TimerManager::AddTimer(const Timer& timer) {
   timers_.push(timer);
 }
-// #@@range_end(timermgr_addtimer)
 
-// #@@range_begin(timermgr_tick)
-void TimerManager::Tick() {
+bool TimerManager::Tick() {
   ++tick_;
+
+  bool task_timer_timeout = false;
   while (true) {
     const auto& t = timers_.top();
     if (t.Timeout() > tick_) {
       break;
+    }
+
+    if (t.Value() == kTaskTimerValue) {
+      task_timer_timeout = true;
+      timers_.pop();
+      timers_.push(Timer{tick_ + kTaskTimerPeriod, kTaskTimerValue});
+      continue;
     }
 
     Message m{Message::kTimerTimeout};
@@ -72,12 +79,18 @@ void TimerManager::Tick() {
 
     timers_.pop();
   }
+
+  return task_timer_timeout;
 }
-// #@@range_end(timermgr_tick)
 
 TimerManager* timer_manager;
 unsigned long lapic_timer_freq;
 
 void LAPICTimerOnInterrupt() {
-  timer_manager->Tick();
+  const bool task_timer_timeout = timer_manager->Tick();
+  NotifyEndOfInterrupt();
+
+  if (task_timer_timeout) {
+    SwitchTask();
+  }
 }
