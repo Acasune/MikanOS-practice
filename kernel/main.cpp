@@ -64,7 +64,7 @@ void InitializeMainWindow() {
   layer_manager->UpDown(main_window_layer_id, std::numeric_limits<int>::max());
 }
 
-// #@@range_begin(create_text_window)
+
 std::shared_ptr<ToplevelWindow> text_window;
 unsigned int text_window_layer_id;
 void InitializeTextWindow() {
@@ -74,7 +74,7 @@ void InitializeTextWindow() {
   text_window = std::make_shared<ToplevelWindow>(
       win_w, win_h, screen_config.pixel_format, "Text Box Test");
   DrawTextbox(*text_window->InnerWriter(), {0, 0}, text_window->InnerSize());
-// #@@range_end(create_text_window)
+
 
   text_window_layer_id = layer_manager->NewLayer()
     .SetWindow(text_window)
@@ -87,13 +87,13 @@ void InitializeTextWindow() {
 
 int text_window_index;
 
-// #@@range_begin(draw_text_cursor)
+
 void DrawTextCursor(bool visible) {
   const auto color = visible ? ToColor(0) : ToColor(0xffffff);
   const auto pos = Vector2D<int>{4 + 8*text_window_index, 5};
   FillRectangle(*text_window->InnerWriter(), pos, {7, 15}, color);
 }
-// #@@range_end(draw_text_cursor)
+
 
 void InputTextWindow(char c) {
   if (c == 0) {
@@ -265,7 +265,7 @@ extern "C" void KernelMainNewStack(
         __asm__("sti");
       }
       break;
-    // #@@range_begin(sendkey_to_active)
+
     case Message::kKeyPush:
       if (auto act = active_layer->GetActive(); act == text_window_layer_id) {
         InputTextWindow(msg->arg.keyboard.ascii);
@@ -276,12 +276,21 @@ extern "C" void KernelMainNewStack(
           printk("wakeup TaskB: %s\n", task_manager->Wakeup(taskb_id).Name());
         }
       } else {
-        printk("key push not handled: keycode %02x, ascii %02x\n",
-            msg->arg.keyboard.keycode,
-            msg->arg.keyboard.ascii);
+        __asm__("cli");
+        auto task_it = layer_task_map->find(act);
+        __asm__("sti");
+        if (task_it != layer_task_map->end()) {
+          __asm__("cli");
+          task_manager->SendMessage(task_it->second, *msg);
+          __asm__("sti");
+        } else {
+          printk("key push not handled: keycode %02x, ascii %02x\n",
+              msg->arg.keyboard.keycode,
+              msg->arg.keyboard.ascii);
+        }
       }
       break;
-    // #@@range_end(sendkey_to_active)
+    
     case Message::kLayer:
       ProcessLayerMessage(*msg);
       __asm__("cli");
