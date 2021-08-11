@@ -76,10 +76,8 @@ class Window {
    */
   void Move(Vector2D<int> dst_pos, const Rectangle<int>& src);
 
-  // #@@range_begin(window_activate)
   virtual void Activate() {}
   virtual void Deactivate() {}
-  // #@@range_end(window_activate)
 
  private:
   int width_, height_;
@@ -90,7 +88,6 @@ class Window {
   FrameBuffer shadow_buffer_{};
 };
 
-// #@@range_begin(tlw)
 class ToplevelWindow : public Window {
  public:
   static constexpr Vector2D<int> kTopLeftMargin{4, 24};
@@ -126,7 +123,6 @@ class ToplevelWindow : public Window {
   std::string title_;
   InnerAreaWriter inner_writer_{*this};
 };
-// #@@range_end(tlw)
 
 void DrawWindow(PixelWriter& writer, const char* title);
 void DrawTextbox(PixelWriter& writer, Vector2D<int> pos, Vector2D<int> size);
