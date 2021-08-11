@@ -93,8 +93,8 @@ KernelMain:
     jmp .fin
 
 global SwitchContext
-SwitchContext:
- mov [rsi + 0x40], rax
+SwitchContext:  ; void SwitchContext(void* next_ctx, void* current_ctx);
+    mov [rsi + 0x40], rax
     mov [rsi + 0x48], rbx
     mov [rsi + 0x50], rcx
     mov [rsi + 0x58], rdx

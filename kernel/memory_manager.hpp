@@ -1,4 +1,9 @@
-﻿
+﻿/**
+ * @file memory_manager.hpp
+ *
+ * メモリ管理クラスと周辺機能を集めたファイル．
+ */
+
 #pragma once
 
 #include <array>

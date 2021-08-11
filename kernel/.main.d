@@ -42,6 +42,14 @@ main.o: main.cpp \
   frame_buffer_config.hpp memory_map.hpp graphics.hpp mouse.hpp font.hpp \
   console.hpp window.hpp \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/optional \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/string \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/string_view \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/__string \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/cwchar \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/cwctype \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/cctype \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/ctype.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/wctype.h \
   frame_buffer.hpp error.hpp \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/array pci.hpp \
   logger.hpp usb/xhci/xhci.hpp usb/xhci/registers.hpp register.hpp \

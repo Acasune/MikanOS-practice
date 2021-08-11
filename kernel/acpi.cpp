@@ -1,14 +1,17 @@
 ﻿#include "acpi.hpp"
+
 #include <cstring>
 #include <cstdlib>
-#include "logger.hpp"
 #include "asmfunc.h"
+#include "logger.hpp"
 
 namespace {
+
 template <typename T>
 uint8_t SumBytes(const T* data, size_t bytes) {
   return SumBytes(reinterpret_cast<const uint8_t*>(data), bytes);
 }
+
 template <>
 uint8_t SumBytes<uint8_t>(const uint8_t* data, size_t bytes) {
   uint8_t sum = 0;
@@ -17,8 +20,11 @@ uint8_t SumBytes<uint8_t>(const uint8_t* data, size_t bytes) {
   }
   return sum;
 }
-} 
+
+} // namespace
+
 namespace acpi {
+
 bool RSDP::IsValid() const {
   if (strncmp(this->signature, "RSD PTR ", 8) != 0) {
     Log(kDebug, "invalid signature: %.8s\n", this->signature);
@@ -70,10 +76,9 @@ void WaitMilliseconds(unsigned long msec) {
     end &= 0x00ffffffu;
   }
 
-  if (end < start ) {
-    while(IoIn32(fadt->pm_tmr_blk) >= start);
+  if (end < start) { // overflow
+    while (IoIn32(fadt->pm_tmr_blk) >= start);
   }
-
   while (IoIn32(fadt->pm_tmr_blk) < end);
 }
 
@@ -104,4 +109,4 @@ void Initialize(const RSDP& rsdp) {
   }
 }
 
-} 
+} // namespace acpi

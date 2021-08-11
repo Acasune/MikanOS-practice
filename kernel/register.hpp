@@ -1,4 +1,10 @@
-﻿#pragma once
+﻿/**
+ * @file register.hpp
+ *
+ * メモリマップトレジスタを読み書きする機能を提供する．
+ */
+
+#pragma once
 
 #include <cstddef>
 #include <cstdint>

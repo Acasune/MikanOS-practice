@@ -1,4 +1,9 @@
-﻿
+﻿/**
+ * @file mouse.hpp
+ *
+ * マウス制御プログラム．
+ */
+
 #pragma once
 
 #include <memory>

@@ -1,4 +1,9 @@
-﻿
+﻿/**
+ * @file interrupt.hpp
+ *
+ * 割り込み用のプログラムを集めたファイル．
+ */
+
 #pragma once
 
 #include <array>

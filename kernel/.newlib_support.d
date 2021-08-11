@@ -20,4 +20,12 @@ newlib_support.o: newlib_support.c \
   /home/vscode/osbook/devenv/x86_64-elf/include/sys/_timespec.h \
   /home/vscode/osbook/devenv/x86_64-elf/include/sys/_pthreadtypes.h \
   /home/vscode/osbook/devenv/x86_64-elf/include/sys/sched.h \
-  /home/vscode/osbook/devenv/x86_64-elf/include/machine/types.h
+  /home/vscode/osbook/devenv/x86_64-elf/include/machine/types.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/sys/stat.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/time.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/sys/reent.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/machine/time.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/sys/_locale.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/newlib.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/signal.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/sys/signal.h
