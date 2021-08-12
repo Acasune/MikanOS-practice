@@ -50,6 +50,7 @@ enum class Attribute : uint8_t {
   kLongName  = 0x0f,
 };
 
+// #@@range_begin(directory_entry)
 struct DirectoryEntry {
   unsigned char name[11];
   Attribute attr;
@@ -69,8 +70,10 @@ struct DirectoryEntry {
       (static_cast<uint32_t>(first_cluster_high) << 16);
   }
 } __attribute__((packed));
+// #@@range_end(directory_entry)
 
 extern BPB* boot_volume_image;
+extern unsigned long bytes_per_cluster;
 void Initialize(void* volume_image);
 
 /** @brief 指定されたクラスタの先頭セクタが置いてあるメモリアドレスを返す。
@@ -98,5 +101,26 @@ T* GetSectorByCluster(unsigned long cluster) {
  * @param ext  拡張子（4 バイト以上の配列）
  */
 void ReadName(const DirectoryEntry& entry, char* base, char* ext);
+
+// #@@range_begin(eoc)
+static const unsigned long kEndOfClusterchain = 0x0ffffffflu;
+// #@@range_end(eoc)
+
+/** @brief 指定されたクラスタの次のクラスタ番号を返す。
+ *
+ * @param cluster  クラスタ番号
+ * @return 次のクラスタ番号（無い場合は kEndOfClusterchain）
+ */
+unsigned long NextCluster(unsigned long cluster);
+
+/** @brief 指定されたディレクトリからファイルを探す。
+ *
+ * @param name  8+3形式のファイル名（大文字小文字は区別しない）
+ * @param directory_cluster  ディレクトリの開始クラスタ（省略するとルートディレクトリから検索する）
+ * @return ファイルを表すエントリ。見つからなければ nullptr。
+ */
+DirectoryEntry* FindFile(const char* name, unsigned long directory_cluster = 0);
+
+bool NameIsEqual(const DirectoryEntry& entry, const char* name);
 
 } // namespace fat
