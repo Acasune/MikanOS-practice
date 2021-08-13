@@ -1,5 +1,4 @@
-﻿
-#include "terminal.hpp"
+﻿#include "terminal.hpp"
 
 #include <cstring>
 #include <limits>
@@ -12,10 +11,10 @@
 #include "memory_manager.hpp"
 #include "paging.hpp"
 
-
 namespace {
 
-WithError<int> MakeArgVector(char* command, char* first_arg, char**argv, int argv_len, char * argbuf, int argbuf_len) {
+WithError<int> MakeArgVector(char* command, char* first_arg,
+    char** argv, int argv_len, char* argbuf, int argbuf_len) {
   int argc = 0;
   int argbuf_index = 0;
 
@@ -34,10 +33,9 @@ WithError<int> MakeArgVector(char* command, char* first_arg, char**argv, int arg
   if (auto err = push_to_argv(command)) {
     return { argc, err };
   }
-
   if (!first_arg) {
     return { argc, MAKE_ERROR(Error::kSuccess) };
-  } 
+  }
 
   char* p = first_arg;
   while (true) {
@@ -52,12 +50,13 @@ WithError<int> MakeArgVector(char* command, char* first_arg, char**argv, int arg
     while (p[0] != 0 && !isspace(p[0])) {
       ++p;
     }
+    // here: p[0] == 0 || isspace(p[0])
     const bool is_end = p[0] == 0;
     p[0] = 0;
     if (auto err = push_to_argv(arg)) {
       return { argc, err };
     }
-    if (is_end){
+    if (is_end) {
       break;
     }
     ++p;
@@ -83,7 +82,7 @@ uintptr_t GetFirstLoadAddress(Elf64_Ehdr* ehdr) {
 static_assert(kBytesPerFrame >= 4096);
 
 WithError<PageMapEntry*> NewPageMap() {
-  auto frame = memory_manager -> Allocate(1);
+  auto frame = memory_manager->Allocate(1);
   if (frame.error) {
     return { nullptr, frame.error };
   }
@@ -109,7 +108,8 @@ WithError<PageMapEntry*> SetNewPageMapIfNotPresent(PageMapEntry& entry) {
   return { child_map, MAKE_ERROR(Error::kSuccess) };
 }
 
-WithError<size_t> SetupPageMap(PageMapEntry* page_map, int page_map_level, LinearAddress4Level addr, size_t num_4kpages) {
+WithError<size_t> SetupPageMap(
+    PageMapEntry* page_map, int page_map_level, LinearAddress4Level addr, size_t num_4kpages) {
   while (num_4kpages > 0) {
     const auto entry_index = addr.Part(page_map_level);
 
@@ -117,27 +117,30 @@ WithError<size_t> SetupPageMap(PageMapEntry* page_map, int page_map_level, Linea
     if (err) {
       return { num_4kpages, err };
     }
+    page_map[entry_index].bits.writable = 1;
     page_map[entry_index].bits.user = 1;
 
     if (page_map_level == 1) {
       --num_4kpages;
     } else {
-      auto [ num_remain_pages, err ] = SetupPageMap(child_map, page_map_level - 1, addr, num_4kpages);
+      auto [ num_remain_pages, err ] =
+        SetupPageMap(child_map, page_map_level - 1, addr, num_4kpages);
       if (err) {
         return { num_4kpages, err };
       }
       num_4kpages = num_remain_pages;
     }
 
-    if (entry_index == 511 ) {
+    if (entry_index == 511) {
       break;
     }
 
     addr.SetPart(page_map_level, entry_index + 1);
-    for (int level = page_map_level -1; level >= 1; --level) {
+    for (int level = page_map_level - 1; level >= 1; --level) {
       addr.SetPart(level, 0);
     }
   }
+
   return { num_4kpages, MAKE_ERROR(Error::kSuccess) };
 }
 
@@ -153,9 +156,9 @@ Error CopyLoadSegments(Elf64_Ehdr* ehdr) {
 
     LinearAddress4Level dest_addr;
     dest_addr.value = phdr[i].p_vaddr;
-    const auto num_4pages = (phdr[i].p_memsz + 4095) / 4096;
+    const auto num_4kpages = (phdr[i].p_memsz + 4095) / 4096;
 
-    if(auto err = SetupPageMaps(dest_addr, num_4pages)) {
+    if (auto err = SetupPageMaps(dest_addr, num_4kpages)) {
       return err;
     }
 
@@ -199,11 +202,12 @@ Error CleanPageMap(PageMapEntry* page_map, int page_map_level) {
 
     const auto entry_addr = reinterpret_cast<uintptr_t>(entry.Pointer());
     const FrameID map_frame{entry_addr / kBytesPerFrame};
-    if (auto err = memory_manager -> Free(map_frame, 1)) {
+    if (auto err = memory_manager->Free(map_frame, 1)) {
       return err;
     }
     page_map[i].data = 0;
   }
+
   return MAKE_ERROR(Error::kSuccess);
 }
 
@@ -214,11 +218,13 @@ Error CleanPageMaps(LinearAddress4Level addr) {
   if (auto err = CleanPageMap(pdp_table, 3)) {
     return err;
   }
+
   const auto pdp_addr = reinterpret_cast<uintptr_t>(pdp_table);
   const FrameID pdp_frame{pdp_addr / kBytesPerFrame};
   return memory_manager->Free(pdp_frame, 1);
 }
-}
+
+} // namespace
 
 Terminal::Terminal() {
   window_ = std::make_shared<ToplevelWindow>(
@@ -254,7 +260,8 @@ Vector2D<int> Terminal::CalcCursorPos() const {
       Vector2D<int>{4 + 8 * cursor_.x, 4 + 16 * cursor_.y};
 }
 
-Rectangle<int> Terminal::InputKey (uint8_t modifier, uint8_t keycode, char ascii) {
+Rectangle<int> Terminal::InputKey(
+    uint8_t modifier, uint8_t keycode, char ascii) {
   DrawCursor(false);
 
   Rectangle<int> draw_area{CalcCursorPos(), {8*2, 16}};
@@ -267,6 +274,7 @@ Rectangle<int> Terminal::InputKey (uint8_t modifier, uint8_t keycode, char ascii
     }
     linebuf_index_ = 0;
     cmd_history_index_ = -1;
+
     cursor_.x = 0;
     if (cursor_.y < kRows - 1) {
       ++cursor_.y;
@@ -278,9 +286,9 @@ Rectangle<int> Terminal::InputKey (uint8_t modifier, uint8_t keycode, char ascii
     draw_area.pos = ToplevelWindow::kTopLeftMargin;
     draw_area.size = window_->InnerSize();
   } else if (ascii == '\b') {
-    if (cursor_.x > 0){
+    if (cursor_.x > 0) {
       --cursor_.x;
-      FillRectangle(*window_->Writer(), CalcCursorPos(), {8,16}, {0,0,0});
+      FillRectangle(*window_->Writer(), CalcCursorPos(), {8, 16}, {0, 0, 0});
       draw_area.pos = CalcCursorPos();
 
       if (linebuf_index_ > 0) {
@@ -302,7 +310,7 @@ Rectangle<int> Terminal::InputKey (uint8_t modifier, uint8_t keycode, char ascii
 
   DrawCursor(true);
 
-  return draw_area;  
+  return draw_area;
 }
 
 void Terminal::Scroll1() {
@@ -328,8 +336,9 @@ void Terminal::ExecuteLine() {
       Print(first_arg);
     }
     Print("\n");
-  } else if (strcmp(command, "clear")  == 0) {
-    FillRectangle(*window_->InnerWriter(), {4,4}, {8*kColumns, 16*kRows}, {0,0,0});
+  } else if (strcmp(command, "clear") == 0) {
+    FillRectangle(*window_->InnerWriter(),
+                  {4, 4}, {8*kColumns, 16*kRows}, {0, 0, 0});
     cursor_.y = 0;
   } else if (strcmp(command, "lspci") == 0) {
     char s[64];
@@ -340,10 +349,12 @@ void Terminal::ExecuteLine() {
           dev.bus, dev.device, dev.function, vendor_id, dev.header_type,
           dev.class_code.base, dev.class_code.sub, dev.class_code.interface);
       Print(s);
-      }
+    }
   } else if (strcmp(command, "ls") == 0) {
-    auto root_dir_entries = fat::GetSectorByCluster<fat::DirectoryEntry>(fat::boot_volume_image->root_cluster);
-    auto entries_per_cluster = fat::boot_volume_image->bytes_per_sector / sizeof(fat::DirectoryEntry) * fat::boot_volume_image->sectors_per_cluster;
+    auto root_dir_entries = fat::GetSectorByCluster<fat::DirectoryEntry>(
+        fat::boot_volume_image->root_cluster);
+    auto entries_per_cluster =
+      fat::bytes_per_cluster / sizeof(fat::DirectoryEntry);
     char base[9], ext[4];
     char s[64];
     for (int i = 0; i < entries_per_cluster; ++i) {
@@ -362,8 +373,8 @@ void Terminal::ExecuteLine() {
         sprintf(s, "%s\n", base);
       }
       Print(s);
-    } 
-  } else if (strcmp(command,"cat") == 0) {
+    }
+  } else if (strcmp(command, "cat") == 0) {
     char s[64];
 
     auto file_entry = fat::FindFile(first_arg);
@@ -387,15 +398,17 @@ void Terminal::ExecuteLine() {
         cluster = fat::NextCluster(cluster);
       }
       DrawCursor(true);
-    }  
+    }
   } else if (command[0] != 0) {
     auto file_entry = fat::FindFile(command);
     if (!file_entry) {
       Print("no such command: ");
       Print(command);
       Print("\n");
-    } else {
-      ExecuteFile(*file_entry, command, first_arg);
+    } else if (auto err = ExecuteFile(*file_entry, command, first_arg)) {
+      Print("failed to exec file: ");
+      Print(err.Name());
+      Print("\n");
     }
   }
 }
@@ -403,7 +416,7 @@ void Terminal::ExecuteLine() {
 Error Terminal::ExecuteFile(const fat::DirectoryEntry& file_entry, char* command, char* first_arg) {
   std::vector<uint8_t> file_buf(file_entry.file_size);
   fat::LoadFile(&file_buf[0], file_buf.size(), file_entry);
-  
+
   auto elf_header = reinterpret_cast<Elf64_Ehdr*>(&file_buf[0]);
   if (memcmp(elf_header->e_ident, "\x7f" "ELF", 4) != 0) {
     using Func = void ();
@@ -415,6 +428,7 @@ Error Terminal::ExecuteFile(const fat::DirectoryEntry& file_entry, char* command
   if (auto err = LoadELF(elf_header)) {
     return err;
   }
+
   LinearAddress4Level args_frame_addr{0xffff'ffff'ffff'f000};
   if (auto err = SetupPageMaps(args_frame_addr, 1)) {
     return err;
@@ -434,18 +448,21 @@ Error Terminal::ExecuteFile(const fat::DirectoryEntry& file_entry, char* command
   }
 
   auto entry_addr = elf_header->e_entry;
-
-  CallApp(argc.value, argv, 3 << 3 | 3, 4 << 3 | 3, entry_addr,
+  CallApp(argc.value, argv, 4 << 3 | 3, 3 << 3 | 3, entry_addr,
       stack_frame_addr.value + 4096 - 8);
 
-  // char s[64];
-  // sprintf(s, "app exited. ret = %d\n", ret);
-  // Print(s);
+  /*
+  char s[64];
+  sprintf(s, "app exited. ret = %d\n", ret);
+  Print(s);
+  */
 
   const auto addr_first = GetFirstLoadAddress(elf_header);
   if (auto err = CleanPageMaps(LinearAddress4Level{addr_first})) {
     return err;
   }
+
+  return MAKE_ERROR(Error::kSuccess);
 }
 
 void Terminal::Print(char c) {
@@ -492,7 +509,7 @@ Rectangle<int> Terminal::HistoryUpDown(int direction) {
   const auto first_pos = CalcCursorPos();
 
   Rectangle<int> draw_area{first_pos, {8*(kColumns - 1), 16}};
-  FillRectangle(*window_->Writer(), draw_area.pos, draw_area.size, {0,0,0});
+  FillRectangle(*window_->Writer(), draw_area.pos, draw_area.size, {0, 0, 0});
 
   const char* history = "";
   if (cmd_history_index_ >= 0) {
@@ -511,12 +528,12 @@ void TaskTerminal(uint64_t task_id, int64_t data) {
   __asm__("cli");
   Task& task = task_manager->CurrentTask();
   Terminal* terminal = new Terminal;
-  layer_manager->Move(terminal->LayerID(), {100,200});
+  layer_manager->Move(terminal->LayerID(), {100, 200});
   active_layer->Activate(terminal->LayerID());
   layer_task_map->insert(std::make_pair(terminal->LayerID(), task_id));
   __asm__("sti");
 
-  while(true) {
+  while (true) {
     __asm__("cli");
     auto msg = task.ReceiveMessage();
     if (!msg) {
@@ -525,31 +542,32 @@ void TaskTerminal(uint64_t task_id, int64_t data) {
       continue;
     }
     __asm__("sti");
+
     switch (msg->type) {
-      case Message::kTimerTimeout:
-          {
-            const auto area = terminal->BlinkCursor();
-            Message msg = MakeLayerMessage(
-                task_id, terminal->LayerID(), LayerOperation::DrawArea, area);
-            __asm__("cli");
-            task_manager->SendMessage(1, msg);
-            __asm__("sti");
-          }
-          break;
-      case Message::kKeyPush:
-          {
-            const auto area = terminal->InputKey(msg->arg.keyboard.modifier,
-                                                msg->arg.keyboard.keycode,
-                                                msg->arg.keyboard.ascii);
-            Message msg = MakeLayerMessage(
-                task_id, terminal->LayerID(), LayerOperation::DrawArea, area);
-            __asm__("cli");
-            task_manager->SendMessage(1, msg);
-            __asm__("sti");
-          }
-          break;  
-        default:
-          break;
+    case Message::kTimerTimeout:
+      {
+        const auto area = terminal->BlinkCursor();
+        Message msg = MakeLayerMessage(
+            task_id, terminal->LayerID(), LayerOperation::DrawArea, area);
+        __asm__("cli");
+        task_manager->SendMessage(1, msg);
+        __asm__("sti");
+      }
+      break;
+    case Message::kKeyPush:
+      {
+        const auto area = terminal->InputKey(msg->arg.keyboard.modifier,
+                                             msg->arg.keyboard.keycode,
+                                             msg->arg.keyboard.ascii);
+        Message msg = MakeLayerMessage(
+            task_id, terminal->LayerID(), LayerOperation::DrawArea, area);
+        __asm__("cli");
+        task_manager->SendMessage(1, msg);
+        __asm__("sti");
+      }
+      break;
+    default:
+      break;
     }
   }
 }
