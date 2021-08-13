@@ -35,10 +35,8 @@ WithError<int> MakeArgVector(char* command, char* first_arg, char**argv, int arg
     return { argc, err };
   }
 
-
-
   if (!first_arg) {
-    return { argv, MAKE_ERROR(Error::kSuccess) };
+    return { argc, MAKE_ERROR(Error::kSuccess) };
   } 
 
   char* p = first_arg;
