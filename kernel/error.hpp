@@ -31,6 +31,7 @@ public:
     kNoSuchTask,
     kInvalidFormat,
     kFrameTooSmall,
+    kInvalidFile,
     kLastOfCode,  // この列挙子は常に最後に配置する
   };
 
@@ -60,6 +61,7 @@ public:
     "kUnknownPixelFormat",
     "kNoSuchTask",
     "kInvalidFormat",
+    "kInvalidFile",
     "kFrameTooSmall",
   };
   static_assert(Error::Code::kLastOfCode == code_names_.size());
