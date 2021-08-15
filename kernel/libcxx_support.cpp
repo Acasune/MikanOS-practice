@@ -1,5 +1,4 @@
-﻿
-#include <new>
+﻿#include <new>
 #include <cerrno>
 
 int printk(const char* format, ...);

@@ -1,4 +1,5 @@
-﻿#include "timer.hpp"
+﻿
+#include "timer.hpp"
 
 #include "acpi.hpp"
 #include "interrupt.hpp"
@@ -15,8 +16,8 @@ namespace {
 void InitializeLAPICTimer() {
   timer_manager = new TimerManager;
 
-  divide_config = 0b1011; 
-  lvt_timer = 0b001 << 16; 
+  divide_config = 0b1011; // divide 1:1
+  lvt_timer = 0b001 << 16; // masked, one-shot
 
   StartLAPICTimer();
   acpi::WaitMilliseconds(100);
@@ -25,8 +26,8 @@ void InitializeLAPICTimer() {
 
   lapic_timer_freq = static_cast<unsigned long>(elapsed) * 10;
 
-  divide_config = 0b1011; 
-  lvt_timer = (0b010 << 16) | InterruptVector::kLAPICTimer; 
+  divide_config = 0b1011; // divide 1:1
+  lvt_timer = (0b010 << 16) | InterruptVector::kLAPICTimer; // not-masked, periodic
   initial_count = lapic_timer_freq / kTimerFreq;
 }
 
@@ -64,7 +65,6 @@ bool TimerManager::Tick() {
       break;
     }
 
-    
     if (t.Value() == kTaskTimerValue) {
       task_timer_timeout = true;
       timers_.pop();
@@ -78,7 +78,6 @@ bool TimerManager::Tick() {
     task_manager->SendMessage(t.TaskID(), m);
 
     timers_.pop();
-    
   }
 
   return task_timer_timeout;
@@ -87,7 +86,7 @@ bool TimerManager::Tick() {
 TimerManager* timer_manager;
 unsigned long lapic_timer_freq;
 
-extern "C" void  LAPICTimerOnInterrupt(const TaskContext& ctx_stack) {
+extern "C" void LAPICTimerOnInterrupt(const TaskContext& ctx_stack) {
   const bool task_timer_timeout = timer_manager->Tick();
   NotifyEndOfInterrupt();
 

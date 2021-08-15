@@ -13,15 +13,16 @@ namespace {
         FillRectangle(writer, pos, size, c);
       };
 
+    // fill main box
     fill_rect(pos + Vector2D<int>{1, 1}, size - Vector2D<int>{2, 2}, background);
 
+    // draw border lines
     fill_rect(pos,                            {size.x, 1}, border_dark);
     fill_rect(pos,                            {1, size.y}, border_dark);
     fill_rect(pos + Vector2D<int>{0, size.y}, {size.x, 1}, border_light);
     fill_rect(pos + Vector2D<int>{size.x, 0}, {1, size.y}, border_light);
   }
 }
-
 
 Window::Window(int width, int height, PixelFormat shadow_format) : width_{width}, height_{height} {
   data_.resize(height);
@@ -98,7 +99,6 @@ void Window::Move(Vector2D<int> dst_pos, const Rectangle<int>& src) {
   shadow_buffer_.Move(dst_pos, src);
 }
 
-
 ToplevelWindow::ToplevelWindow(int width, int height, PixelFormat shadow_format,
                                const std::string& title)
     : Window{width, height, shadow_format}, title_{title} {
@@ -118,7 +118,6 @@ void ToplevelWindow::Deactivate() {
 Vector2D<int> ToplevelWindow::InnerSize() const {
   return Size() - kTopLeftMargin - kBottomRightMargin;
 }
-
 
 namespace {
   const int kCloseButtonWidth = 16;
