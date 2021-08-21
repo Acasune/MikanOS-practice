@@ -62,4 +62,5 @@ main.o: main.cpp \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/__tree \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/__node_handle \
   timer.hpp /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/queue \
-  acpi.hpp keyboard.hpp task.hpp terminal.hpp fat.hpp syscall.hpp
+  acpi.hpp keyboard.hpp task.hpp fat.hpp file.hpp terminal.hpp \
+  syscall.hpp
