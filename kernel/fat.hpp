@@ -51,7 +51,6 @@ enum class Attribute : uint8_t {
   kLongName  = 0x0f,
 };
 
-// #@@range_begin(directory_entry)
 struct DirectoryEntry {
   unsigned char name[11];
   Attribute attr;
@@ -71,7 +70,6 @@ struct DirectoryEntry {
       (static_cast<uint32_t>(first_cluster_high) << 16);
   }
 } __attribute__((packed));
-// #@@range_end(directory_entry)
 
 extern BPB* boot_volume_image;
 extern unsigned long bytes_per_cluster;
@@ -103,6 +101,8 @@ T* GetSectorByCluster(unsigned long cluster) {
  */
 void ReadName(const DirectoryEntry& entry, char* base, char* ext);
 
+void FormatName(const DirectoryEntry& entry, char* dest);
+
 // #@@range_begin(eoc)
 static const unsigned long kEndOfClusterchain = 0x0ffffffflu;
 // #@@range_end(eoc)
@@ -114,13 +114,8 @@ static const unsigned long kEndOfClusterchain = 0x0ffffffflu;
  */
 unsigned long NextCluster(unsigned long cluster);
 
-/** @brief 指定されたディレクトリからファイルを探す。
- *
- * @param name  8+3形式のファイル名（大文字小文字は区別しない）
- * @param directory_cluster  ディレクトリの開始クラスタ（省略するとルートディレクトリから検索する）
- * @return ファイルを表すエントリ。見つからなければ nullptr。
- */
-DirectoryEntry* FindFile(const char* name, unsigned long directory_cluster = 0);
+std::pair<DirectoryEntry*, bool>
+FindFile(const char* path, unsigned long directory_cluster = 0);
 
 bool NameIsEqual(const DirectoryEntry& entry, const char* name);
 /** @brief 指定されたファイルの内容をバッファへコピーする。
@@ -131,5 +126,17 @@ bool NameIsEqual(const DirectoryEntry& entry, const char* name);
  * @return  読み込んだバイト数
  */
 size_t LoadFile(void* buf, size_t len, const DirectoryEntry& entry);
+
+class FileDescriptor {
+  public:
+    explicit FileDescriptor(DirectoryEntry& fat_entry);
+    size_t Read(void* buf, size_t len);
+
+  private:
+    DirectoryEntry& fat_entry_;
+    size_t rd_off_ = 0;
+    unsigned long rd_cluster_ = 0;
+    size_t rd_cluster_off_ = 0;
+};
 
 } // namespace fat
