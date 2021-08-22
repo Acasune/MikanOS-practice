@@ -11,13 +11,29 @@ font.o: font.cpp font.hpp \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/cstring \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/string.h \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/__debug \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/ft2build.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/config/ftheader.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/freetype.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/config/ftconfig.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/config/ftoption.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/config/ftstdlib.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/stddef.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/limits.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/stdio.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/stdlib.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/setjmp.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/fttypes.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/ftsystem.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/ftimage.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/fterrors.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/ftmoderr.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/fterrdef.h \
   graphics.hpp \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/algorithm \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/memory \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/typeinfo \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/exception \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/cstdlib \
-  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/stdlib.h \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/new \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/limits \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/iterator \
@@ -31,4 +47,11 @@ font.o: font.cpp font.hpp \
   /home/vscode/osbook/devenv/x86_64-elf/include/_ansi.h \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/functional \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/bit \
-  frame_buffer_config.hpp
+  frame_buffer_config.hpp error.hpp \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/cstdio \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/array \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/vector \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/__bit_reference \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/climits \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/__split_buffer \
+  fat.hpp file.hpp

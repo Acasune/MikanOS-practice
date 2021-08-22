@@ -40,6 +40,21 @@ main.o: main.cpp \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/climits \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/limits.h \
   frame_buffer_config.hpp memory_map.hpp graphics.hpp mouse.hpp font.hpp \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/ft2build.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/config/ftheader.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/freetype.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/config/ftconfig.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/config/ftoption.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/config/ftstdlib.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/stddef.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/setjmp.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/fttypes.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/ftsystem.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/ftimage.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/fterrors.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/ftmoderr.h \
+  /home/vscode/osbook/devenv/x86_64-elf/include/freetype2/freetype/fterrdef.h \
+  error.hpp /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/array \
   console.hpp window.hpp \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/optional \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/string \
@@ -50,14 +65,13 @@ main.o: main.cpp \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/cctype \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/ctype.h \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/wctype.h \
-  frame_buffer.hpp error.hpp \
-  /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/array pci.hpp \
-  logger.hpp usb/xhci/xhci.hpp usb/xhci/registers.hpp register.hpp \
-  usb/xhci/context.hpp usb/endpoint.hpp usb/xhci/ring.hpp usb/memory.hpp \
-  usb/xhci/trb.hpp usb/xhci/port.hpp usb/xhci/devmgr.hpp \
-  usb/xhci/device.hpp usb/device.hpp usb/setupdata.hpp usb/arraymap.hpp \
-  interrupt.hpp x86_descriptor.hpp message.hpp asmfunc.h segment.hpp \
-  paging.hpp memory_manager.hpp layer.hpp \
+  frame_buffer.hpp pci.hpp logger.hpp usb/xhci/xhci.hpp \
+  usb/xhci/registers.hpp register.hpp usb/xhci/context.hpp \
+  usb/endpoint.hpp usb/xhci/ring.hpp usb/memory.hpp usb/xhci/trb.hpp \
+  usb/xhci/port.hpp usb/xhci/devmgr.hpp usb/xhci/device.hpp \
+  usb/device.hpp usb/setupdata.hpp usb/arraymap.hpp interrupt.hpp \
+  x86_descriptor.hpp message.hpp asmfunc.h segment.hpp paging.hpp \
+  memory_manager.hpp layer.hpp \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/map \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/__tree \
   /home/vscode/osbook/devenv/x86_64-elf/include/c++/v1/__node_handle \
