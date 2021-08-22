@@ -43,6 +43,7 @@ class Terminal {
   void Print(const char* s, std::optional<size_t> len = std::nullopt);
   Task& UnderlyingTask() const { return task_; }
   int LastExitCode() const { return last_exit_code_;}
+  void Redraw();
 
  private:
   std::shared_ptr<ToplevelWindow> window_;
