@@ -23,7 +23,7 @@ extern "C" void main(int argc, char** argv) {
     }
     if (events[0].type == AppEvent::kQuit) {
       break;
-    else if (events[0].type == AppEvent::kMouseMove || 
+    } else if (events[0].type == AppEvent::kMouseMove || 
         events[0].type == AppEvent::kMouseButton ||
         events[0].type == AppEvent::kKeyPush) {
           // ignore 
